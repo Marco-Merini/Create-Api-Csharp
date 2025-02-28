@@ -1,16 +1,13 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using SistemadeTarefas.Data;
+using SistemadeTarefas.Repositories;
+using SistemadeTarefas.Repositories.Interfaces;
 
 namespace SistemadeTarefas
 {
@@ -23,18 +20,26 @@ namespace SistemadeTarefas
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
+        // Método para configurar os serviços da aplicação
         public void ConfigureServices(IServiceCollection services)
         {
-
             services.AddControllers();
+
+            // Configurando o Entity Framework com SQL Server
+            services.AddDbContext<SistemaTarefasDBContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("Database")));
+
+            // Injeção de Dependência dos Repositórios
+            services.AddScoped<InterfaceUsuarioRepositorio, UsuarioRepositorio>();
+
+            // Configuração do Swagger
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "SistemadeTarefas", Version = "v1" });
             });
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        // Método para configurar o pipeline de requisições HTTP
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -45,9 +50,7 @@ namespace SistemadeTarefas
             }
 
             app.UseHttpsRedirection();
-
             app.UseRouting();
-
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
