@@ -1,0 +1,16 @@
+﻿using SistemadeTarefas.Enums;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace SistemadeTarefas.Models
+{
+    public class TarefaModel
+    {
+        public int Id { get; set; }
+        public string? Name { get; set; }
+        public string? Description { get; set; }
+        public StatusTarefa Status { get; set; }
+    }
+}
